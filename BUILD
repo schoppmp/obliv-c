@@ -1,15 +1,27 @@
 genrule(
-  name = "oblivcc",
+  name = "compile_oblivc",
   outs = [
-    "libobliv.a",
+    "bin/oblivcc",
+    "bin/cilly",
   ],
   local = 1,
+  # Build Obliv-C locally. We have to make a deep-copy of the sources, because
+  # relative paths do not work across symlinks.
   cmd = "\n".join([
         "DIR=$$(mktemp -d $${TMPDIR-/tmp}/tmp.XXXXXXX)",
+        "echo $${DIR}",
         "cp -Lfr . \"$${DIR}\"",
         "(cd \"$${DIR}\" && ./configure && make)",
-        "cp $${DIR}/_build/libobliv.a $(@D)",
+        "cp $${DIR}/bin/oblivcc $(@D)/bin/oblivcc",
+        "cp $${DIR}/bin/cilly $(@D)/bin/cilly",
+        "cp -r $${DIR}/lib $(@D)",
         ]),
+)
+
+sh_binary(
+  name = "oblivcc",
+  srcs = ["bin/oblivcc"],
+  data = [":compile_oblivc"],
 )
 
 cc_library(
