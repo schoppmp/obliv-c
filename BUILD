@@ -22,6 +22,7 @@ sh_binary(
   name = "oblivcc",
   srcs = ["bin/oblivcc"],
   data = [":compile_oblivc"],
+  visibility = ["//visibility:public"],
 )
 
 cc_library(
